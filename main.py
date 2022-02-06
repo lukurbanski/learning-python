@@ -1,3 +1,7 @@
+#virtual env
+# python3 -m venv venv/       # Creates an environment called venv/
+# source venv/bin/activate    
+
 import pandas as pd
 import numpy as np
 
