@@ -24,8 +24,12 @@ print('----------')
 #this is also generator
 
 mypi1 = (x*3.17 for x in my_list)
-for n in mypi1:
-    print(n)
+
+# for n in mypi1:
+#     print(n)
+
+print(mypi1)
+print(list(mypi1)) #easily converted to list, if we uncomment above for loop this list would be empty
 
 print('----------')
-#TBC
+#https://www.youtube.com/watch?v=bD05uGo_sVI
