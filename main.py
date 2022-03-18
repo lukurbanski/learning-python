@@ -14,4 +14,7 @@ lst2 = list(range(1,6))
 df = pd.DataFrame(list(zip(lst, lst2)),
                columns =['Word', 'Value'])
 
-print(df.head(10))
+# print(df.head(10))
+
+def divide_by_pi(x):
+    return x/3.14
