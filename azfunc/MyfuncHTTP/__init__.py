@@ -6,16 +6,19 @@ import os
 import pyodbc
 
 logger = logging.getLogger('akshay')
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 sh = logging.StreamHandler()
-sh.setLevel(logging.INFO)
+sh.setLevel(logging.DEBUG)
 logger.addHandler(sh)
-logger.info('TestLogger')
+logger.debug('TestLogger')
 
+#Function for running sql procedure
+#Database as parameter
+#Name and surname in the body (json)
 
 def main(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Python HTTP trigger function processed a request.') #not working
-    logger.info('Starting main function')
+    logger.debug('Starting main function')
 
 
     server="proveit.database.windows.net"
@@ -26,25 +29,55 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         try:
             req_body = req.get_json()
         except ValueError:
-            pass
+            return func.HttpRequest('Name or surname not provided', status_code = 400)
         else:
             database = req_body.get('database')
 
     driver="{ODBC Driver 17 for SQL Server}"
-    query="select count(1) from [dbo].[employee]"
+
+    try:
+        req_body = req.get_json()
+    except ValueError:
+        return func.HttpRequest('Name or surname not provided', status_code = 400)
+    else:
+        name = req_body.get('name')
+        surname = req_body.get('surname')
+
+    logger.debug(f'{name}, {surname}')
+
+    
 
     connection_string = 'DRIVER='+driver+';SERVER='+server+';DATABASE='+database
-    logger.info('Trying to connect')
+    logger.debug('Trying to connect')
     conn = pyodbc.connect(connection_string+';Authentication=ActiveDirectoryMsi')
-    logger.info('Connection successful')
+    logger.debug('Connection successful')
 
     cursor = conn.cursor()
-    nrrows = cursor.execute(query).fetchval()
+
+    logger.debug('Trying to execute stored procedure')
+
+    #not working, probably not enough priviliges.
+    # sql = """
+    # SET NOCOUNT ON;
+    # EXEC dbo.insert_employee 'Lukasz','Test' ; """
+
+
+    sql = """
+    SET NOCOUNT ON;
+    INSERT INTO [dbo].[employee] (first_name,  last_name) VALUES (?, ?); """
+    
+    values = (name,surname)
+
+
+    cursor.execute(sql,values)
+    conn.commit()
+
+    
+    logger.debug('Procedure executed successfully')
+
     #row = cursor.fetchone()
 
-    logger.info(nrrows)
-
     return func.HttpResponse(
-            f"This HTTP triggered function executed successfully. Connected to database.{nrrows}" , status_code=200
+            f"This HTTP triggered function executed successfully. New person added to the database" , status_code=200
     )
  
