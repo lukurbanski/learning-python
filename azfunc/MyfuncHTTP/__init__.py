@@ -12,7 +12,7 @@ sh.setLevel(logging.DEBUG)
 logger.addHandler(sh)
 logger.debug('TestLogger')
 
-#Function for running sql procedure
+#Function for inserting data with HTTP trigger
 #Database as parameter
 #Name and surname in the body (json)
 
